@@ -1,18 +1,19 @@
 import pandas as pd
 import logging
 import os
+from typing import Tuple
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
-def get_exchange_rate(currency_rates, date, currency):
+def get_exchange_rate(currency_rates: pd.DataFrame, date: pd.Timestamp, currency: str) -> float:
     rates_on_date = currency_rates[currency_rates['date'] == date]
     if not rates_on_date.empty:
         return rates_on_date.iloc[0][currency]
     return 1
 
 
-def calculate_fees(row, affiliates_rates):
+def calculate_fees(row: pd.Series, affiliates_rates: pd.DataFrame) -> Tuple[float, float, float]:
     applicable_rates = affiliates_rates[(affiliates_rates['Affiliate ID'] == row['Affiliate ID']) &
                                         (affiliates_rates['Start Date'] <= row['Order Date'])]
     if not applicable_rates.empty:
@@ -27,7 +28,7 @@ def calculate_fees(row, affiliates_rates):
     return processing_fee, refund_fee, chargeback_fee
 
 
-def generate_reports(orders_path, affiliates_path, currency_path):
+def generate_reports(orders_path: str, affiliates_path: str, currency_path: str) -> None:
     logging.info("Starting report generation process.")
 
     logging.info("Loading Excel files.")

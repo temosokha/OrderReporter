@@ -7,7 +7,10 @@ pd.options.mode.chained_assignment = None
 
 def read_excel_file(file_path: str) -> pd.DataFrame:
     try:
-        return pd.read_excel(file_path)
+        df = pd.read_excel(file_path)
+        if df.empty:
+            logging.warning(f"The file {file_path} is empty. There is no data to process.")
+        return df
     except Exception as e:
         logging.error(f"Error reading file {file_path}: {e}")
         raise
